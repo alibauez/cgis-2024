@@ -47,7 +47,14 @@ HU 1 - Gestión de médicos
     Como administrador,
     Quiero borrar un médico. El sistema deberá alertarme de la irrevocabilidad de esta acción y pedir confirmación. En caso de confirmación, el sistema deberá borrar el médico y navegar al listado actualizado de médicos con un mensaje de éxito.
 
-Recuerde que tiene disponible tanto los modelos de datos que serán usados por los controladores, como las vistas de la aplicación que se devolverán como respuesta de los métodos del controlador ya implementadas. Trabaje con los controladores y rutas necesarias para cumplir con los requisitos funcionales especificados.
+Como parte de este laboratorio tendrá que:
+- Recuperar médicos, especialidades y otras entidades relacionadas con médicos. Para ello, puede utilizar las relaciones de Eloquent https://laravel.com/docs/10.x/eloquent-relationships. Puede encontrar más información sobre cómo hacerlo aquí: https://laravel.com/docs/10.x/eloquent#retrieving-models. Es posible que también necesite paginar los resultados en algunos casos. Puede encontrar más información sobre cómo hacerlo aquí: https://laravel.com/docs/10.x/pagination.
+- Crear y actualizar tanto médicos como usuarios, ya que existe una relación de herencia entre ellos. https://laravel.com/docs/10.x/eloquent#inserting-and-updating-models.
+- Borrar médicos y usuarios. https://laravel.com/docs/10.x/eloquent#deleting-models.
+- Autorizar métodos de controlador con policies. https://laravel.com/docs/10.x/authorization#via-controller-helpers.
+- Flashear mensajes de éxito y error para informar al usuario de que el. https://laravel.com/docs/10.x/session#flash-data.
 
+Recuerde que tiene disponible tanto los modelos de datos que serán usados por los controladores, como las vistas de la aplicación que se devolverán como respuesta de los métodos del controlador ya implementadas. Trabaje con los controladores y rutas necesarias para cumplir con los requisitos funcionales especificados.
+Además, tiene controladores de apoyo ya implementados que puede utilizar como referencia para el desarrollo del laboratorio.
 Una vez completado el laboratorio, la aplicación debería funcionar exactamente igual que funciona la gestión de médicos de la aplicación desplegada en la rama master. Recuerde que puede desplegarla para inspirarse. Para ello, logee como administrador para comprobar las funcionalidades realizadas.
 
