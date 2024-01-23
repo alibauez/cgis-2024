@@ -47,7 +47,6 @@ Route::middleware(['auth'])->group(function () {
     Route::resources([
         'citas' => CitaController::class,
         'especialidads' => EspecialidadController::class,
-        'medicos' => MedicoController::class,
         'medicamentos' => MedicamentoController::class,
     ]);
 });
