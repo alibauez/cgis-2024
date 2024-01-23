@@ -1,58 +1,53 @@
-# Proyecto citas CGIS
+# Laboratorio 3: Vista
 
 ## Objetivo
-El objetivo de esta aplicación es mostrar un proyecto mínimo donde se trabaje con:
-- Laravel Sail como entorno de desarrollo basado en Docker. Más info: https://laravel.com/docs/master/sail
-- Eloquent ORM para trabajar a alto nivel con base de datos MySQL, incluyendo:
-  - Conocer las convenciones en el nombrado de modelos y tablas de Laravel. Más info: https://laravel.com/docs/master/eloquent#eloquent-model-conventions. Puedes ver ejemplos de cómo se nombran las tablas vs modelos en los siguientes casos:
-    - app/Models/Cita.php vs. 2021_03_10_195932_create_citas_table.php (modelo: Cita, tabla: citas. Cita -> citas)
-    - app/Models/Especialidad.php vs. 2021_03_02_115313_create_especialidads_table.php (Especialidad -> especialidads)
-    - Tablas intermedias necesarias para relaciones N a N, por ejemplo entre citas y medicamentos: 2021_03_10_195933_create_cita_medicamento_table.php. (Medicamento-Cita -> cita_medicamento ¡orden alfabético y singular!).
-  - Ejecutar desde PHP las operaciones básicas de SQL gracias a los métodos heredados de la clase Model que nos da Laravel, especialmente focalizado en gestionar el CRUD de las entidades. Recuerda que son los controladores (app/Http/Controllers) son los encargados de trabajar con los modelos y recuperar/insertar/modificar/borrar datos y pasar a las vistas la información requerida. Más info: https://laravel.com/docs/master/eloquent#retrieving-models
-    - Listado de todas las entidades (paginadas o no). Ejemplo de recuperar todos los médicos paginados: app/Http/Controllers/MedicoController@index -> Medico::paginate(25). Más info sobre paginación: https://laravel.com/docs/master/pagination
-    - Listado de todas las especialidades para así poder generar la vista de creación de médico, ya que necesitamos un desplegable con todas las especialidades disponibles para así elegirlas: app/Http/Controllers/MedicoController@create -> Especialidad::all(). Más info: https://laravel.com/docs/master/eloquent#retrieving-models
-    - Crear un médico y guardarlo en la BBDD: app/Http/Controllers/MedicoController@store -> $medico = new Medico($request->all()); ..... $medico->save(); Más info: https://laravel.com/docs/master/eloquent#inserting-and-updating-models
-    - Editar un médico y actualizarlo en la BBDD: app/Http/Controllers/MedicoController@update -> $medico->save(); Más info: https://laravel.com/docs/master/eloquent#inserting-and-updating-models
-    - Borrar un médico de la BBDD: app/Http/Controllers/MedicoController@destroy -> $medico->delete(); Más info: https://laravel.com/docs/master/eloquent#deleting-models
-    - Trabajar con relaciones N a N (attaching, detaching, syncing) -> app/Http/Controllers/CitaController@attach_medicamento / app/Http/Controllers/CitaController@detach_medicamento. Más info: https://laravel.com/docs/master/eloquent-relationships#updating-many-to-many-relationships
-  - Conocer cómo se especifican las relaciones entre modelos (foreign keys) y cómo trabajar con estas relaciones como query especializable o como el resultado de ejecución de esa query Más info: https://laravel.com/docs/master/eloquent-relationships
-    - Relación 1 a 1, ejemplo en la relación entre las clases Paciente y User. Métodos app/Models/Paciente@user y app/Models/User@paciente. Más info: https://laravel.com/docs/master/eloquent-relationships#one-to-one
-    - Relación 1 a N, ejemplo en la relación entre Cita y Médico (Médico es el lado 1, Cita el lado N). Métodos app/Models/Medico@citas y app/Models/Cita@medico. Más info: https://laravel.com/docs/master/eloquent-relationships#one-to-many
-    - Relación N a N, ejemplo en la relación entre Cita y Medicamento. Métodos app/Models/Medicamento@citas y app/Models/Cita@medico. Más info: https://laravel.com/docs/master/eloquent-relationships#many-to-many
-- Migraciones para crear el esquema de la base de datos (database/migrations). Más info: https://laravel.com/docs/master/migrations
-- Seeders para poblar con datos de prueba la base de datos (database/seeders). Más info: https://laravel.com/docs/master/seeding
-- Definición de modelos disponibles en app/Models, que serán las encargadas de interactuar con la BBDD (capa Modelo en MVC), incluyendo: 
-  - Propiedad fillable, que permite el rellenado automático de los atributos de las entidades a partir de los inputs una HTTP Request. Más info: https://laravel.com/docs/master/eloquent#mass-assignment
-  - Propiedad casts, que permite la conversión de tipo entre cadenas (como está almacenada y como se obtiene de la BBDD) a tipos concretos en PHP, como fechas o booleanos. Ejemplo en app/Cita. https://laravel.com/docs/master/eloquent-mutators#attribute-casting
-  - Propiedades derivadas (Accesors) getPropiedadAttribute que son accesibles como atributos de manera transparente (por ejemplo, se podría ejecutar el método getNombreCompletoAttribute de una hipotética clase Persona y obtener su resultado, dada una variable $persona de la clase Persona, tal que: $persona->nombre_completo). Ejemplo en app/Paciente@getMedicamentosActualesAttribute. Más info: https://laravel.com/docs/master/eloquent-mutators#defining-an-accessor
-- Definición de rutas disponibles de la aplicación web (routes/web.php), que son las encargadas de escuchar las peticiones HTTP de los usuarios y ejecutar el método especificado en un controlador, incluyendo:
-  - Definición de rutas simples, como Route::get('/pacientes-hoy', [PacienteController::class, 'pacientesHoy']); Más info: https://laravel.com/docs/master/routing
-  - Definición de rutas de tipo recurso que crea 7 rutas, una para cada operación CRUD y la asocia a un controlador en concreto. Por ejemplo: Route::resources(['medicamentos' => MedicamentoController::class]);. Más info: https://laravel.com/docs/master/controllers#resource-controllers
-  - Grupos de rutas con Route::group. Más info: https://laravel.com/docs/master/routing#route-groups
-  - Inclusión de Middlewares, que son encargados de, data una petición HTTP, poder rechazarla o dejarla pasar (tal y como está o modificándola, sobrecargándola con más información, etc.). Ejemplo: app/Http/Middleware/IsTipoUsuario, que filtra las peticiones y solo deja pasar aquellas logeadas y cuyo usuario logeado pertenezca a una colección de tipo de usuarios. Este middleware está aplicado a diferentes grupos de ruta en el archivo routes/web.php. Por ejemplo: Route::middleware(['auth', 'tipo_usuario:3'])->group(function () {...}). Más info: https://laravel.com/docs/master/middleware. Recuerda que esta funcionalidad de restringir recursos (métodos) se puede realizar específicamente creando Policies (app/Policies). Más info: https://laravel.com/docs/master/authorization#creating-policies
-- Definición de controladores de tipo recurso (app/Http/Controllers). Más info: https://laravel.com/docs/master/controllers, incluyendo:
-  - Definición de Policies que permiten devolver un error de falta de permiso si el usuario que inicia la petición HTTP no tiene privilegios. Por ejemplo: app/Policies/CitaPolicy, que es una policy de tipo recurso asociada a Cita. Cada vez que un método CRUD (index, create, etc.) de CitaController vaya a ser ejecutado, uno de los métodos de CitaPolicy será invocado (index->viewAny, show->view,create->create, etc.). Si devuelve true, se permitirá la ejecución, si no, se devolverá un error de falta de permisos. Más info sobre las policies : https://laravel.com/docs/master/authorization#creating-policies
-  - Aplicación de policies a nivel controlador. Por ejemplo: app/Http/Controllers/CitaController, método constructor __construct.
-- Definición de vistas, incluyendo:
-  - Trabajo con las Blade Template, que nos permiten utilizar código PHP para renderizar de manera dinámica HTML. Por ejemplo, en la vista resources/views/medicos/index.blade.php usamos la cláusula @foreach, que nos permite recorrer un array que el controlador (en este caso, el array $medicos que le pasa el método app/Http/Controllers/MedicoController@index) Más info: https://laravel.com/docs/master/blade
-  - Creación de plantillas que nos permitan mantener el mismo estilo en toda sin tener que repetir código en cada vista de los elementos que se repiten, como barra de navegación, logo, etc. Todas las vistas heredarán el código de estas plantillas (layouts) y rellenarán los huecos dejados en la plantilla. Ejemplo: las tres vistas en resources/views/layouts. Más info: https://laravel.com/docs/master/blade#building-layouts
-  - Trabajo con formularios y validación básica en cliente con HTML para la creación de recursos, incluyendo la gestión de errores recibidos por parte del Controlador así como repoblar los valores de los inputs tras mandar una petición de envío de formulario con errores gracias al método old. Por ejemplo: resources/views/medicos/create.blade.php. Más info sobre formularios: https://laravel.com/docs/master/blade#forms
-  - Trabajo con formularios y validación básica en cliente con HTML para la edición de recursos, incluyendo la gestión de errores recibidos por parte del Controlador así como poblar por defecto los valores de los inputs con los valores que vienen en el recurso a editar. Por ejemplo: resources/views/medicos/edit.blade.php. Más info sobre formularios: https://laravel.com/docs/master/blade#forms
-  - Vistas de detalle de un recurso, que puede mostrar no solo información relativa a ese recurso, sino a los recursos asociados (foreign keys). Por ejemplo: resources/views/citas/show.blade.php
-  - Definición y trabajo con componentes, que son elementos reutilizables del front-end, como botones, inputs, etc. que se usan en toda la aplicación para mantener homogeneidad y no duplicar código. Por ejemplo, resources/views/components/button.blade.php que, una vez definido en el anterior archivo, se utiliza en las vistas, por ejemplo: resources/views/medicos/create.blade.php, como <x-button>. Más info: https://laravel.com/docs/master/blade#components
-- Generación y comprensión del ciclo de autorización por defecto de Laravel. Más info: https://laravel.com/docs/master/authentication
+El objetivo de este laboratorio es practicar con Laravel Blade para el desarrollo de vistas simples de relaciones 1-N (1 especialidad - N médicos) que permitan el inicio del desarrollo del proyecto individual al completo.
 
-## Puesta en marcha
-Siga estos pasos para ejecutar la aplicación en Laravel Sail. Se da por supuesto que tiene Docker disponible en su sistema.
-1. Clone desde Visual Studio Code (o cualquier IDE de su preferencia) este repositorio.
-2. Duplique el archivo .env.example y renómbrelo a .env
-3. Desde el terminal, navegue hasta el directorio donde haya descargado el proyecto y ejecute: ``docker run --rm \
-   -u "$(id -u):$(id -g)" \
-   -v "$(pwd):/var/www/html" \
-   -w /var/www/html \
-   laravelsail/php83-composer:latest \
-   composer install --ignore-platform-reqs``. Más info: https://laravel.com/docs/master/sail#installing-composer-dependencies-for-existing-projects.
-4. Cuando termine, compruebe que la carpeta vendor está disponible.
-5. Desde el terminal, partiendo del directorio base del proyecto, ejecute: ```./vendor/bin/sail up -d```
-7. Cuando termine el comando anterior, ejecute: ``./vendor/bin/sail artisan migrate:fresh --seed && ./vendor/bin/sail artisan storage:link``
-8. Abra su navegador y escriba en la barra de navegación: http://localhost
+Este laboratorio está diseñado para llevarse a cabo de manera autónoma, y, con las dudas conceptuales y técnicas que surjan durante el desarrollo, buscar apoyo en la sesión de seguimiento con el profesorado. Para ello, en esta rama encontrará el proyecto de citas completo excepto las vistas que tendrá que implementar, y le guiará en el desarrollo de la misma indicando dónde puede encontrar material de estudio y apoyo. Recuerde que este laboratorio está solucionado en la rama main, con lo que puede consultarla en cualquier momento para comprobar su solución.
+
+En este laboratorio el estudiante deberá implementar el CRUD básico de la entidad Especialidad, que consta de:
+- **Vista de listado de especialidades (incluyendo paginación)**. El listado deberá dar acceso a las acciones de crear, editar y borrar especialidades.
+  ![listado-especialidades.png](public%2Flistado-especialidades.png)
+- **Vista de creación de especialidad**. El formulario deberá impedir en cliente que el formulario se envíe si el nombre está vacío y mostrar los errores devueltos por el controlador en caso de haberlos y mantener los valores introducidos por el usuario en dicho caso. Se debe poder navegar al listado de especialidades además de poder guardar la especialidad.
+  ![crear-especialidad.png](public%2Fcrear-especialidad.png)
+- **Vista de edición de especialidad**. El formulario deberá mostrar los valores almacenados en la base de datos al inicio de la edición, los errores en su caso y mantener los valores introducidos por el usuario en caso de error.
+  ![editar-especialidad.png](public%2Feditar-especialidad.png)
+
+Además, deberá realizar las vistas del lado N de la relación entre Médico-Especialidad: Médico.
+- Vista de listado de médicos (incluyendo paginación). El listado deberá dar acceso a las acciones de crear, editar y borrar médicos.
+  ![listado-medicos.png](public%2Flistado-medicos.png)
+- Vista de creación de médico. Deberá poderse elegir una especialidad de la lista de especialidades disponibles en la base de datos (relación 1-N) y deberá validarse en cliente todo aquello que sea posible. Para ello, compruebe las reglas de validación presentes en MedicoController::store para establecer las restricciones de validación en el formulario.
+  ![crear-medico.png](public%2Fcrear-medico.png)
+- Vista de detalle de médico (incluyendo el nombre de la especialidad). Nótese que en el título aparece Editar Médico NOMBREMEDICO. Corríjalo y muestre el mensaje "Detalle de médico NOMBREMEDICO" en lugar de "Editar médico NOMBREMEDICO".
+  ![show-medico.png](public%2Fshow-medico.png)
+- Vista de edición de médico. Deberá poderse elegir una especialidad de la lista de especialidades disponibles en la base de datos (relación 1-N) y deberá validarse en cliente todo aquello que sea posible. Para ello, compruebe las reglas de validación presentes en MedicoController::update para establecer las restricciones de validación en el formulario.
+  ![editar-medico.png](public%2Feditar-medico.png)
+## Requisitos
+
+Para ello, deberá conocer el funcionamiento de Laravel Blade y las directivas de control de flujo y de impresión de datos. Además, deberá conocer el funcionamiento de los formularios HTML y el uso de los elementos de formulario para la creación de formularios de edición y creación de entidades.
+Si no tiene experiencia con el uso de formularios HTML, puede consultar la documentación de referencia de Mozilla Developer Network (MDN) en el siguiente enlace: https://developer.mozilla.org/es/docs/Learn/Forms/Your_first_form
+Si necesita más apoyo sobre el lenguaje de marcado HTML, puede consultar la documentación de referencia de Mozilla Developer Network (MDN) en el siguiente enlace: https://developer.mozilla.org/en-US/docs/Learn/HTML/Introduction_to_HTML, haciendo especial hincapié en los siguientes elementos:
+- Tablas: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/table
+- Inputs: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input
+- Selects: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/select
+- Divs: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/div
+- Buttons: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/button
+
+Una vez tenga la base necesaria, tendrá que:
+- Mostrar información provista por los controladores en las vistas: https://laravel.com/docs/10.x/blade#displaying-data
+- Mostrar información de forma condicional: https://laravel.com/docs/10.x/blade#if-statements
+- Mostrar información de forma iterativa: https://laravel.com/docs/10.x/blade#loops, por ejemplo, para generar las filas de una tabla basado en las colecciones (https://laravel.com/docs/10.x/collections) pasadas a la vista por el controlador.
+- Trabajar con los CSRF field dentro de los formularios HTML para la creación/edición: https://laravel.com/docs/10.x/blade#csrf-field
+- Trabajar con los componentes (https://laravel.com/docs/10.x/blade#components) creados para facilitar la creación de vistas, que pueden encontrarse en resources/views/components, en especial: los botones (button-primary para botones de acción principal, danger-button para botones de cancelar o similares), input-error para mostrar los errores de validación en servidor, así como los inputs más usados: input-label para las etiquetas de los inputs, text-input y select.
+- Trabajar con paginación: https://laravel.com/docs/10.x/pagination#customizing-the-pagination-view
+
+Dé por hecho el sistema de plantillas presente (https://laravel.com/docs/10.x/blade#building-layouts), e intente reutilizar los estilos de otras vistas que encontrará ya implementadas.
+Recuerde que son los controladores los que se encargan de gestionar las peticiones HTTP y devolver las respuestas HTTP (por ejemplo, devolviendo el HTML que representa una vista en concreto). 
+Por tanto, deberá comprobar qué vistas son las utilizadas por dichos controladores para que las vistas funcionen correctamente y crearlas en caso necesario.
+Además, en este laboratorio, las rutas necesarias para que las vistas funcionen correctamente están implementadas. Compruebe, además del path, el verbo usado por cada ruta involucrada.
+
+El modo propuesto de trabajo es: copie una vista similar, pruebe a borrar/añadir componentes y elementos HTML y recargue la página para comprobar el resultado. Si no funciona, deshaga los cambios y pruebe de nuevo. Si funciona, continúe con el siguiente paso.
+
+Recuerde que, tras ejecutar en el terminal ``./vendor/bin/sail up -d`` para levantar Laravel Sail, deberá ejecutar ``.npm run dev`` si quiere que, cuando se salve un cambio en la vista, se haga un redespliegue en caliente.
+
+Al finalizar el laboratorio, además de establecerse un diseño similar al adjunto en las capturas, la experiencia de usuario en cuanto al funcionamiento de la aplicación deberá ser similar al disponible en la rama master. Despliegue dicha como paso previo para establecer el comportamiento deseado y revise tantas veces sea necesario hasta conseguir el resultado deseado.
