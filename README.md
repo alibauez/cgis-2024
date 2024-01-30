@@ -55,4 +55,6 @@ Siga estos pasos para ejecutar la aplicación en Laravel Sail. Se da por supuest
 4. Cuando termine, compruebe que la carpeta vendor está disponible.
 5. Desde el terminal, partiendo del directorio base del proyecto, ejecute: ```./vendor/bin/sail up -d```
 7. Cuando termine el comando anterior, ejecute: ``./vendor/bin/sail artisan migrate:fresh --seed && ./vendor/bin/sail artisan storage:link``
-8. Abra su navegador y escriba en la barra de navegación: http://localhost
+8. Cuando termine el comando anterior, ejecute ``npm install``
+9. Cuando termine el comando anterior, ejecute ``npm run dev``
+10. Abra su navegador y escriba en la barra de navegación: http://localhost
