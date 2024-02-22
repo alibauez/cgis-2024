@@ -13,7 +13,7 @@ class Cita extends Model
     //la fecha_hora la quiero almacenar en tipo datetime, por lo que la transformo haciendo uso del casting
     protected $casts = [
         'fecha_hora' => 'datetime:Y-m-d H:i',
-    ]
+    ];
 
     //ahora establezco las relaciones entre modelos
 
@@ -26,7 +26,9 @@ class Cita extends Model
         return $this->belongsTo(Paciente::class);
     }
 
-
+    public function medicamento(){ //la clase medicamento pertenece a clase paciente, porq la flecha va hacia este sentido, pero al ser relacion n-n, hay que poner tabla intermedia
+        return $this->belongsToMany(Medicamento::class)->using(CitaMedicamento::Class)->withPivot('tomas_dia', 'comentarios', 'inicio', 'fin');
+    }
 
 
 
